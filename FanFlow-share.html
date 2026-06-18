@@ -161,6 +161,22 @@ img { display: block; max-width: 100%; }
 .plan-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
 .plan-choice b, .plan-choice span { display: block; }
 .plan-choice span { color: var(--coral-dark); font-weight: 800; }
+.custom-quantity {
+  margin-top: 10px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  display: grid;
+  grid-template-columns: 1fr minmax(180px, 260px);
+  gap: 10px;
+  align-items: center;
+  background: #fff;
+  transition: .15s ease;
+}
+.custom-quantity.selected { border-color: var(--teal); background: var(--teal-soft); }
+.custom-quantity .field-label { margin: 0; }
+.custom-quantity small { grid-column: 1 / -1; color: var(--coral-dark); font-weight: 800; }
+.custom-quantity small:empty { display: none; }
 .tag { display: inline-flex; padding: 3px 7px; border-radius: 4px; color: #fff; background: var(--coral); font-size: 10px; font-weight: 800; }
 .summary-row { padding: 11px 0; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 15px; font-size: 13px; }
 .summary-total { padding: 20px 0; display: flex; align-items: center; justify-content: space-between; }
@@ -238,6 +254,7 @@ img { display: block; max-width: 100%; }
   .section-head, .cta-inner { align-items: flex-start; flex-direction: column; }
   .section-head h2 { font-size: 34px; }
   .platform-grid, .testimonial-grid, .steps, .plan-grid, .choice-grid, .checkout-grid, .radio-row { grid-template-columns: 1fr; }
+  .custom-quantity { grid-template-columns: 1fr; }
   .platform-card { min-height: 160px; }
   .footer-grid { grid-template-columns: 1fr; gap: 30px; }
   .footer-bottom { flex-direction: column; gap: 8px; }
@@ -315,13 +332,29 @@ body { background: var(--paper); font-weight: 400; }
 .quick-workflows { max-width: 900px; margin: 48px auto 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: left; }
 .quick-workflows a { min-height: 128px; padding: 18px; border: 1px solid var(--line); border-radius: 9px; display: flex; flex-direction: column; justify-content: space-between; background: transparent; transition: .2s ease; }
 .quick-workflows a:hover { background: #fff; border-color: #c8c5bd; transform: translateY(-2px); }
-.quick-workflows b { font-size: 13px; font-weight: 600; }
+.workflow-head { display: flex; align-items: center; gap: 10px; }
+.workflow-logo {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #fff;
+  background: var(--logo-color, var(--ink));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.18);
+}
+.workflow-logo svg { width: 18px; height: 18px; fill: currentColor; stroke: currentColor; stroke-width: 1.8; }
+.workflow-logo svg path, .workflow-logo svg rect, .workflow-logo svg circle { vector-effect: non-scaling-stroke; }
+.quick-workflows b { font-size: 13px; font-weight: 600; line-height: 1.4; }
 .quick-workflows span { color: #aaa8a0; font-size: 11px; }
+.quick-workflows .workflow-head { color: var(--ink); font-size: inherit; }
 .hero-more { margin-top: 24px; }
 .trust-band { padding: 44px 0 52px; color: var(--ink); background: var(--paper); }
 .trust-row { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); text-align: center; }
 .trust-row span { display: block; }
 .trust-row b { display: block; font-family: "Noto Serif TC", serif; font-size: 34px; font-weight: 600; }
+.trust-row .count-up { font-variant-numeric: tabular-nums; }
 .trust-row small { color: #a09e97; font-size: 11px; }
 
 .platform-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
@@ -359,7 +392,7 @@ body { background: var(--paper); font-weight: 400; }
 .panel { border-color: var(--line); border-radius: 9px; box-shadow: none; }
 .order-main, .order-side, .auth-panel, .contact-card, .quote-card { background: #fff; }
 .choice, .plan-choice, .input, .select, .radio-card { border-radius: 7px; }
-.choice:hover, .choice.selected, .plan-choice:hover, .plan-choice.selected { border-color: #bcb8ae; background: #f5f3ed; }
+.choice:hover, .choice.selected, .plan-choice:hover, .plan-choice.selected, .custom-quantity.selected { border-color: #bcb8ae; background: #f5f3ed; }
 .progress span.active { background: var(--coral); }
 .summary-total b:last-child, .service-table td:nth-child(4) { color: var(--coral-dark); }
 .service-table th { background: #f4f2ed; }
@@ -514,14 +547,13 @@ const copy = {
       checkoutDescription: "Final step. Confirm your target link and payment details.",
       targetUrl: "Target URL *",
       targetHint: "Please enter the full public link of your profile, post, video, or channel.",
-      invoice: "Invoice Type *",
-      invoicePersonal: "Electronic Invoice",
-      invoiceCompany: "Company Invoice",
+      quantity: "Quantity",
+      customQuantity: "Custom quantity",
+      customQuantityPlaceholder: "Enter custom quantity",
       payment: "Payment Method *",
-      card: "Credit Card",
-      atm: "ATM Transfer",
-      linePay: "LINE Pay",
-      mobilePay: "Mobile payment",
+      alipay: "Alipay",
+      wechat: "WeChat Pay",
+      paypal: "PayPal",
       remember: "Remember my details on this browser",
       agree: "I have read and agree to the",
       terms: "Terms of Service",
@@ -744,14 +776,13 @@ const copy = {
       checkoutDescription: "最后一步，确认目标链接与付款信息。",
       targetUrl: "目标网址 *",
       targetHint: "请填写公开账号、帖子、视频或频道的完整链接。",
-      invoice: "发票类型 *",
-      invoicePersonal: "电子发票",
-      invoiceCompany: "企业发票",
+      quantity: "数量",
+      customQuantity: "自定义数量",
+      customQuantityPlaceholder: "请输入自定义数量",
       payment: "付款方式 *",
-      card: "信用卡",
-      atm: "ATM 转账",
-      linePay: "LINE Pay",
-      mobilePay: "行动支付",
+      alipay: "支付宝",
+      wechat: "微信",
+      paypal: "PayPal",
       remember: "记住本次资料于此浏览器",
       agree: "我已阅读并同意",
       terms: "使用政策与服务条款",
@@ -860,19 +891,18 @@ const copy = {
 };
 
 const platformBase = [
-  { name: "Instagram", mark: "IG", color: "#df4f76" },
-  { name: "YouTube", mark: "YT", color: "#e94b3c" },
-  { name: "Facebook", mark: "FB", color: "#3377d4" },
-  { name: "TikTok", mark: "TT", color: "#171816" },
-  { name: "Threads", mark: "TH", color: "#555851" },
-  { name: "X / Twitter", mark: "X", color: "#171816" }
+  { name: "Instagram", mark: "IG", icon: "instagram", color: "#df4f76" },
+  { name: "YouTube", mark: "YT", icon: "youtube", color: "#e94b3c" },
+  { name: "Facebook", mark: "FB", icon: "facebook", color: "#3377d4" },
+  { name: "TikTok", mark: "TT", icon: "tiktok", color: "#171816" },
+  { name: "Threads", mark: "TH", icon: "threads", color: "#555851" },
+  { name: "X / Twitter", mark: "X", icon: "x", color: "#171816" }
 ];
 
 const plans = [
-  { qty: 100, price: 50, original: 60 }, { qty: 250, price: 120, original: 145 },
-  { qty: 500, price: 235, original: 280 }, { qty: 1000, price: 460, original: 550 },
-  { qty: 2500, price: 1125, original: 1320 }, { qty: 5000, price: 2200, original: 2600 },
-  { qty: 10000, price: 4300, original: 5100 }, { qty: 25000, price: 10250, original: 12300 },
+  { qty: 100, price: 50, original: 60 }, { qty: 500, price: 235, original: 280 },
+  { qty: 1000, price: 460, original: 550 }, { qty: 5000, price: 2200, original: 2600 },
+  { qty: 10000, price: 4300, original: 5100 },
   { qty: 50000, price: 20000, original: 24500 }
 ];
 
@@ -902,7 +932,33 @@ function serviceRows() {
   });
 }
 function money(value) { return `${t().currency} ${Number(value).toLocaleString("en-US")}`; }
+function quantity(value) { return Number(value || 0).toLocaleString("en-US"); }
+function planForQuantity(value, custom = false) {
+  const qty = Math.max(1, Math.round(Number(value) || 0));
+  const exact = plans.find(plan => plan.qty === qty);
+  if (exact) return { ...exact, custom };
+  const tier = plans.reduce((best, plan) => (plan.qty <= qty ? plan : best), plans[0]);
+  const price = Math.max(1, Math.ceil((tier.price / tier.qty) * qty));
+  const original = Math.max(price + 1, Math.ceil((tier.original / tier.qty) * qty));
+  return { qty, price, original, custom: true };
+}
 function platformMark(name) { return platformBase.find(p => p.name === name)?.mark || name.slice(0, 2); }
+function platformMeta(name) { return platformBase.find(p => p.name === name); }
+function platformLogo(name, className = "workflow-logo") {
+  const meta = platformMeta(name);
+  const icon = meta?.icon || "default";
+  const color = meta?.color || "#171816";
+  const label = meta?.mark || name.slice(0, 2);
+  const icons = {
+    instagram: `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="4"></rect><circle cx="12" cy="12" r="3.2"></circle><circle cx="16.4" cy="7.6" r="1"></circle></svg>`,
+    youtube: `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="6.5" width="16" height="11" rx="3.2"></rect><path d="M10.6 9.4v5.2L15.4 12z"></path></svg>`,
+    facebook: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.2 20v-7h2.4l.4-3h-2.8V8.1c0-.9.3-1.5 1.6-1.5H16V4.1c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.5-4 4.1V10H7v3h2.6v7z"></path></svg>`,
+    tiktok: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 4c.4 2.5 1.9 4 4.5 4.3v3.1a7.4 7.4 0 0 1-4.4-1.5v5.8a4.8 4.8 0 1 1-4.8-4.8c.4 0 .7 0 1.1.1v3.3a1.8 1.8 0 1 0 1.2 1.7V4z"></path></svg>`,
+    threads: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.7 11.2c-.3-3.1-2.2-5-5.5-5-3.4 0-5.8 2.4-5.8 5.9 0 3.6 2.3 5.9 5.9 5.9 2.3 0 4.1-1 5-2.8.5-1.1.2-2.5-.7-3.3-.5-.4-1.1-.7-1.9-.9-.7-1.5-2-2.2-3.8-2.1-1 .1-1.9.4-2.7 1l1.3 1.9c.4-.4.9-.6 1.6-.7.8 0 1.4.2 1.7.7l-1.7.2c-2 .3-3.2 1.3-3.2 2.9 0 1.5 1.2 2.7 3.1 2.7 2 0 3.5-1 4-2.8.6.2.8.6.6 1-.4 1-1.6 1.6-3.2 1.6-2.4 0-3.8-1.6-3.8-4.3s1.5-4.3 3.7-4.3c2.1 0 3.2 1.1 3.4 3.2z"></path></svg>`,
+    x: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4.1l3.5 5 4.2-5H20l-5.9 6.9L20.5 20h-4.1l-4-5.7L7.6 20H4.4l6.4-7.5z"></path></svg>`
+  };
+  return `<span class="${className}" style="--logo-color:${color}" aria-hidden="true">${icons[icon] || label}</span>`;
+}
 function getPage() {
   if (location.protocol === "file:") return location.hash.replace(/^#\/?|\/$/g, "").split("?")[0] || "home";
   const path = location.pathname.replace(/\/index\.html$/, "/");
@@ -950,9 +1006,8 @@ const header = () => {
     <div class="container nav-inner">
       <a href="/" data-link class="brand"><span class="brand-mark">O</span> ${BRAND}</a>
       <div class="nav-links" id="navLinks">
-        <a href="/about" data-link>${c.nav.about}</a><a href="/#testimonials" data-link>${c.nav.reviews}</a>
+        <a href="/about" data-link>${c.nav.about}</a><a href="/user/services" data-link>${c.nav.services}</a><a href="/#testimonials" data-link>${c.nav.reviews}</a>
         <a href="/user/faq" data-link>${c.nav.faq}</a><a href="/contact" data-link>${c.nav.contact}</a>
-        <a href="/user/services" data-link>${c.nav.services}</a>
       </div>
       <div class="nav-actions">
         <a class="btn btn-secondary" href="/user/auth/login" data-link>${c.nav.login}</a>
@@ -1001,11 +1056,11 @@ function homePage() {
           </div>
           <div class="hero-actions"><a href="/guest/marketing-plans" data-link class="btn btn-coral">${h.primary}</a><a href="/user/services" data-link class="btn btn-secondary">${h.secondary}</a></div>
           <div class="quick-workflows">
-            ${h.workflows.map(([platform, title, desc]) => `<a href="/guest/marketing-plans?type=${encodeURIComponent(platform)}" data-link data-platform="${platform}"><b>${title}</b><span>${desc} -></span></a>`).join("")}
+            ${h.workflows.map(([platform, title, desc]) => `<a href="/guest/marketing-plans?type=${encodeURIComponent(platform)}" data-link data-platform="${platform}"><span class="workflow-head">${platformLogo(platform)}<b>${title}</b></span><span>${desc} -></span></a>`).join("")}
           </div>
         </div>
       </section>
-      <div class="trust-band"><div class="container trust-row">${h.metrics.map(x => `<span><b>${x[0]}</b><small>${x[1]}</small></span>`).join("")}</div></div>
+      <div class="trust-band"><div class="container trust-row">${h.metrics.map(x => `<span><b class="count-up" data-count="${x[0]}">0</b><small>${x[1]}</small></span>`).join("")}</div></div>
       <section class="section" id="services"><div class="container"><div class="section-head"><div><span class="eyebrow">${h.servicesEyebrow}</span><h2>${h.servicesTitle}</h2></div><p>${h.servicesDescription}</p></div><div class="platform-grid">${platformCards()}</div></div></section>
       <section class="section value-band"><div class="container value-layout"><div><span class="eyebrow" style="color:#e5601a">${h.whyEyebrow}</span><h2>${h.whyTitle}</h2><p>${h.whyDescription}</p><a href="/about" data-link class="btn btn-coral">${h.whyButton}</a></div><div class="value-list">${h.values.map((x,i)=>`<div class="value-item"><span class="value-number">${String(i+1).padStart(2,"0")}</span><div><h3>${x[0]}</h3><p>${x[1]}</p></div></div>`).join("")}</div></div></section>
       <section class="section"><div class="container"><div class="section-head"><div><span class="eyebrow">${h.teamsEyebrow}</span><h2>${h.teamsTitle}</h2></div></div><div class="industry-list">${h.teams.map(x => `<span>${x}</span>`).join("")}</div></div></section>
@@ -1018,13 +1073,13 @@ function guestPage() {
   const c = t();
   if (state.complete) return `<main class="section"><div class="container"><div class="panel success-box"><div class="success-icon">✓</div><span class="eyebrow">${c.order.received}</span><h1>${c.order.successTitle}</h1><p class="muted">${c.order.successText.replace("{order}", Date.now().toString().slice(-8))}</p><a href="/" data-link class="btn">${c.order.backHome}</a></div></div></main>`;
   const itemOptions = itemsByPlatform()[state.platform] || [];
-  const side = `<aside class="panel order-side"><span class="eyebrow">Order summary</span><h3>${c.order.summary}</h3><div class="summary-row"><span>${c.order.platform}</span><b>${state.platform}</b></div><div class="summary-row"><span>${c.order.service}</span><b>${state.item || c.order.notSelected}</b></div><div class="summary-row"><span>${c.order.targetVolume}</span><b>${state.plan ? state.plan.qty.toLocaleString() : "-"}</b></div><div class="summary-total"><b>${c.order.total}</b><b>${state.plan ? money(state.plan.price) : c.order.noAmount}</b></div><p class="small muted">${c.order.secure}</p></aside>`;
+  const side = `<aside class="panel order-side"><span class="eyebrow">Order summary</span><h3>${c.order.summary}</h3><div class="summary-row"><span>${c.order.platform}</span><b>${state.platform}</b></div><div class="summary-row"><span>${c.order.service}</span><b>${state.item || c.order.notSelected}</b></div><div class="summary-row"><span>${c.order.targetVolume}</span><b id="orderQtySummary">${state.plan ? quantity(state.plan.qty) : "-"}</b></div><div class="summary-total"><b>${c.order.total}</b><b id="orderTotalSummary">${state.plan ? money(state.plan.price) : c.order.noAmount}</b></div><p class="small muted">${c.order.secure}</p></aside>`;
   if (state.checkout) {
     return `<main><div class="page-title"><div class="container"><span class="eyebrow">${c.order.checkoutEyebrow}</span><h1>${c.order.checkoutTitle}</h1><p>${c.order.checkoutDescription}</p></div></div><section class="section"><div class="container order-shell"><form class="panel order-main" id="checkoutForm"><div class="progress"><span class="active"></span><span class="active"></span><span class="active"></span></div><div class="checkout-grid">
       <label class="form-group full"><span class="field-label">${c.order.targetUrl}</span><input class="input" name="target" type="url" required placeholder="https://www.instagram.com/youraccount/"><small class="muted">${c.order.targetHint}</small></label>
       <label class="form-group"><span class="field-label">Email *</span><input class="input" name="email" type="email" required placeholder="you@example.com"></label>
-      <label class="form-group"><span class="field-label">${c.order.invoice}</span><select class="select"><option>${c.order.invoicePersonal}</option><option>${c.order.invoiceCompany}</option></select></label>
-      <div class="form-group full"><span class="field-label">${c.order.payment}</span><div class="radio-row"><label class="radio-card"><input type="radio" name="payment" value="card" required><b>${c.order.card}</b><small class="muted">Visa / Mastercard</small></label><label class="radio-card"><input type="radio" name="payment" value="atm"><b>${c.order.atm}</b><small class="muted">Virtual account</small></label><label class="radio-card"><input type="radio" name="payment" value="line"><b>${c.order.linePay}</b><small class="muted">${c.order.mobilePay}</small></label></div></div>
+      <label class="form-group"><span class="field-label">${c.order.quantity}</span><select class="select" name="quantity"><option value="${state.plan.qty}">${quantity(state.plan.qty)}</option></select></label>
+      <div class="form-group full"><span class="field-label">${c.order.payment}</span><div class="radio-row"><label class="radio-card"><input type="radio" name="payment" value="alipay" required><b>${c.order.alipay}</b></label><label class="radio-card"><input type="radio" name="payment" value="wechat"><b>${c.order.wechat}</b></label><label class="radio-card"><input type="radio" name="payment" value="paypal"><b>${c.order.paypal}</b></label></div></div>
       <div class="form-group full"><label class="check-row"><input type="checkbox" checked> ${c.order.remember}</label><label class="check-row"><input type="checkbox" name="terms" required> ${c.order.agree} <a href="/terms" data-link style="color:#0d8f7a">${c.order.terms}</a></label></div>
       <div class="form-group full"><button class="btn btn-coral" style="width:100%" type="submit">${c.order.payButton} · ${money(state.plan.price)}</button></div>
     </div></form>${side}</div></section></main>`;
@@ -1032,7 +1087,7 @@ function guestPage() {
   return `<main><div class="page-title"><div class="container"><span class="eyebrow">${c.order.orderEyebrow}</span><h1>${c.order.orderTitle}</h1><p>${c.order.orderDescription}</p></div></div><section class="section"><div class="container order-shell"><div class="panel order-main"><div class="progress"><span class="active"></span><span></span><span></span></div>
     <span class="field-label">${c.order.stepPlatform}</span><div class="choice-grid">${platforms().map(p=>`<button class="choice ${state.platform===p.name?"selected":""}" data-select-platform="${p.name}"><b>${p.mark} ${p.name}</b><small>${p.desc.split(",")[0]}</small></button>`).join("")}</div>
     <label><span class="field-label">${c.order.stepService}</span><select class="select" id="itemSelect"><option value="">${c.order.servicePlaceholder}</option>${itemOptions.map(x=>`<option ${state.item===x?"selected":""}>${x}</option>`).join("")}</select></label>
-    <div style="margin-top:25px"><span class="field-label">${c.order.stepVolume}</span><div class="plan-grid">${plans.map((p,i)=>`<button class="plan-choice ${state.plan?.qty===p.qty?"selected":""}" data-plan="${i}"><b>${p.qty.toLocaleString()}</b><span>${money(p.price)}</span><small><s>${money(p.original)}</s> <i class="tag">${c.order.save} ${Math.round((1-p.price/p.original)*100)}%</i></small></button>`).join("")}</div></div>
+    <div style="margin-top:25px"><span class="field-label">${c.order.stepVolume}</span><div class="plan-grid">${plans.map((p,i)=>`<button class="plan-choice ${!state.plan?.custom && state.plan?.qty===p.qty?"selected":""}" data-plan="${i}"><b>${quantity(p.qty)}</b><span>${money(p.price)}</span><small><s>${money(p.original)}</s> <i class="tag">${c.order.save} ${Math.round((1-p.price/p.original)*100)}%</i></small></button>`).join("")}</div><label class="custom-quantity ${state.plan?.custom ? "selected" : ""}"><span class="field-label">${c.order.customQuantity}</span><input class="input" id="customQty" type="number" min="1" step="1" inputmode="numeric" placeholder="${c.order.customQuantityPlaceholder}" value="${state.plan?.custom ? state.plan.qty : ""}"><small id="customQtyPrice">${state.plan?.custom ? money(state.plan.price) : ""}</small></label></div>
     <div class="notice"><b>${c.order.noticeTitle}</b> ${c.order.notice}</div>
     <button class="btn btn-coral" id="continueBtn" style="width:100%" ${!state.item || !state.plan ? "disabled": ""}>${c.order.continue}</button>
   </div>${side}</div></section></main>`;
@@ -1110,7 +1165,20 @@ function bindEvents() {
   document.querySelector("#menuButton")?.addEventListener("click", () => document.querySelector("#navLinks").classList.toggle("open"));
   document.querySelectorAll("[data-select-platform]").forEach(el => el.addEventListener("click", () => { state.platform = el.dataset.selectPlatform; state.item = ""; state.plan = null; render(); }));
   document.querySelector("#itemSelect")?.addEventListener("change", e => { state.item = e.target.value; render(); });
-  document.querySelectorAll("[data-plan]").forEach(el => el.addEventListener("click", () => { state.plan = plans[Number(el.dataset.plan)]; render(); }));
+  document.querySelectorAll("[data-plan]").forEach(el => el.addEventListener("click", () => { state.plan = { ...plans[Number(el.dataset.plan)], custom: false }; render(); }));
+  document.querySelector("#customQty")?.addEventListener("input", e => {
+    state.plan = e.target.value ? planForQuantity(e.target.value, true) : null;
+    document.querySelectorAll(".plan-choice.selected").forEach(el => el.classList.remove("selected"));
+    e.target.closest(".custom-quantity")?.classList.toggle("selected", Boolean(state.plan));
+    const price = document.querySelector("#customQtyPrice");
+    if (price) price.textContent = state.plan ? money(state.plan.price) : "";
+    const qtySummary = document.querySelector("#orderQtySummary");
+    if (qtySummary) qtySummary.textContent = state.plan ? quantity(state.plan.qty) : "-";
+    const totalSummary = document.querySelector("#orderTotalSummary");
+    if (totalSummary) totalSummary.textContent = state.plan ? money(state.plan.price) : t().order.noAmount;
+    const continueButton = document.querySelector("#continueBtn");
+    if (continueButton) continueButton.disabled = !state.item || !state.plan;
+  });
   document.querySelector("#continueBtn")?.addEventListener("click", () => { state.checkout = true; render(); window.scrollTo({top:0}); });
   document.querySelector("#checkoutForm")?.addEventListener("submit", e => { e.preventDefault(); state.complete = true; render(); window.scrollTo({top:0}); });
   document.querySelectorAll("[data-faq]").forEach(el => el.addEventListener("click", () => el.closest(".faq-item").classList.toggle("open")));
@@ -1129,6 +1197,49 @@ function bindEvents() {
   };
   search?.addEventListener("input", updateServices);
   filter?.addEventListener("change", updateServices);
+  animateCounters();
+}
+
+function splitMetric(value) {
+  const match = String(value).match(/^([\d.]+)(.*)$/);
+  if (!match) return { target: 0, decimals: 0, suffix: "" };
+  const target = Number(match[1]);
+  const decimals = match[1].includes(".") ? match[1].split(".")[1].length : 0;
+  return { target, decimals, suffix: match[2] };
+}
+
+function animateCounter(el) {
+  if (el.dataset.done === "true") return;
+  el.dataset.done = "true";
+  const metric = splitMetric(el.dataset.count);
+  const duration = 1400;
+  const started = performance.now();
+  const tick = now => {
+    const progress = Math.min((now - started) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const value = metric.target * eased;
+    el.textContent = `${value.toFixed(metric.decimals)}${metric.suffix}`;
+    if (progress < 1) requestAnimationFrame(tick);
+    else el.textContent = el.dataset.count;
+  };
+  requestAnimationFrame(tick);
+}
+
+function animateCounters() {
+  const counters = [...document.querySelectorAll(".count-up")];
+  if (!counters.length) return;
+  if (!("IntersectionObserver" in window)) {
+    counters.forEach(animateCounter);
+    return;
+  }
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      animateCounter(entry.target);
+      observer.unobserve(entry.target);
+    });
+  }, { threshold: .35 });
+  counters.forEach(el => observer.observe(el));
 }
 
 window.addEventListener("popstate", render);
