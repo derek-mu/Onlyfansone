@@ -685,7 +685,7 @@ function aboutPage() {
 }
 function contactPage() {
   const c = t();
-  return `<main><div class="page-title"><div class="container"><span class="eyebrow">${c.contact.eyebrow}</span><h1>${c.contact.title}</h1><p>${c.contact.description}</p></div></div><section class="section"><div class="container contact-layout"><div><h2>${c.contact.title}</h2><p class="muted">${c.contact.description}</p><div class="contact-points">${c.contact.points.map(x=>`<span><b>${x[0]}</b> ${x[1]}</span>`).join("")}</div><button class="btn btn-teal" id="lineButton">${c.contact.button}</button></div><div class="contact-card"><span class="eyebrow">${c.contact.cardEyebrow}</span><h3>${c.contact.cardTitle}</h3><p class="muted">${c.contact.cardText}</p><div class="notice">${c.contact.notice}</div></div></div></section></main>`;
+  return `<main><div class="page-title"><div class="container"><span class="eyebrow">${c.contact.eyebrow}</span><h1>${c.contact.title}</h1><p>${c.contact.description}</p></div></div><section class="section"><div class="container contact-layout"><div><h2>${c.contact.title}</h2><p class="muted">${c.contact.description}</p><div class="contact-points">${c.contact.points.map(x=>`<span><b>${x[0]}</b> ${x[1]}</span>`).join("")}</div><button class="btn btn-teal" id="lineButton">${c.contact.button}</button></div><div class="contact-card"><span class="eyebrow">${c.contact.cardEyebrow}</span><h3>${c.contact.cardTitle}</h3><p class="muted">${c.contact.cardText}</p><div class="notice">${c.contact.notice}</div><img class="contact-qr" src="/assets/contact-qr.jpeg" alt="OnlyFansOne service QR code"></div></div></section></main>`;
 }
 
 function authPage(mode) {
